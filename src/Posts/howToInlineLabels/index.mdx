@@ -1,0 +1,182 @@
+import AddressInput from './AddressInput.tsx'
+
+### An Input with Inline Label
+
+When creating form contols, it is standard practice to create a label and an input.
+`label for` is good for accessibility, and applications such as screen readers can use it.
+Note that the `input` and `label` are related via the `label for`/ `input id` pair, not order or proximity.
+
+
+```jsx
+<label for="add-l1">Address Line 1: </label>
+<input id="add-l1" type="text" name="address-line-1" value={managedValue} />
+```
+
+<div style={{ padding: '16px', backgroundColor: '#ddd', display: 'inline-flex', }}>
+  <label for="add-l1">Address Line 1: </label>
+  <span>&nbsp;&nbsp;</span>
+  <input id="add-l1" type="text" name="address-line-1" />
+</div>
+
+A major downside is the screen space consumed.
+So, one approach is to shift the label over the control.
+This can provide a much cleaner interface.
+Try entering text in the input below.
+
+<AddressInput />
+
+### Using the New Control
+
+One nice thing about this implementation is that you only need to change `input` to the new `InputText` control,
+and pass the label as a property.
+There should not be any need to adjust positioning.
+Note that the input must be a [controlled input](https://reactjs.org/docs/forms.html#controlled-components).
+In other words, a change to its value must trigger a render.
+
+As such, to use the new `input`, you would only need to make simple changes.
+
+```jsx
+<label for="add-l1">Address Line 1: </label>
+<input id="add-l1" type="text" name="address-line-1" value={controlledValue} />
+```
+
+becomes
+
+```jsx
+<InputText id="add-l1" type="text" name="address-line-1" value={controlledValue} label="Address Line 1" />
+```
+
+And, if no `label` or `id` was present,
+
+```jsx
+<input type="text" name="address-line-1" value={controlledValue} />
+```
+
+becomes
+
+```jsx
+<InputText type="text" name="address-line-1" value={controlledValue} label="Address Line 1" />
+```
+
+### Implementing the New Control
+
+So, now we should write the new control.
+
+First, if you don't have [Lodash](https://lodash.com/) already, then run the following to get a utility which we use.
+
+```bash
+yarn add lodash.uniqueid @types/lodash.uniqueid
+```
+
+Now for the implementation.
+
+```tsx
+/* ./InputText.tsx */
+
+import _ from "lodash";
+import { FunctionComponent, InputHTMLAttributes, memo, useState } from "react";
+import './Input.css';
+
+export interface InputTextProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'placeholder'> {
+    label: string,
+}
+
+const InputText: FunctionComponent<InputTextProps> = ({
+    ...props
+}) => {
+
+    const [newId] = useState(_.uniqueId('gen-'));
+    const id = props.id ?? newId;
+
+    const className = `input-container${props.value == null || props.value ===''?'':' has-value'}`
+
+    return (
+        <span className={className}>
+            <input id={id} {...props} />
+            <label htmlFor={id}>{props.label}</label>
+        </span>
+    );
+}
+
+export default memo(InputText);
+```
+
+```css
+/* ./Input.css */
+
+.input-container {
+    position: relative;
+    display: inline-block;
+}
+
+.input-container > input {
+    width: 160px;
+    height: 36px;
+    padding: 10px 6px 0px 6px;
+    margin: 4px;
+    border: 1px solid #222;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.input-container > label {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    transition: 0.2s;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    pointer-events: none;
+}
+
+.input-container > input:focus + label, .input-container.has-value > label {
+    top: 6px;
+    left: 10px;
+    font-size: 12px;
+    color: blue;
+}
+```
+
+* The `InputText` control creates a continer which holds both the actual `input` and the `label`.
+
+* The container is `inline-block` and `relative`, which allows positioning of the child elements,
+but does not interfere with pre-existing CSS styling.
+[In another article](/post/post/how-to-animate-input-borders), a `flex` approach is used.
+
+* The `InputText` control accepts all the parameters which an `input` can,
+and just forwards those to its `input` in the HTML document.
+Note that it actually excludes `placeholder`, because `placeholder` would conflict with the positioned `label`.
+
+* The other parameter which `InputText` accepts is a `label text`, which it uses when creating the `label`.
+
+* Because the implementation is largely CSS driven, the `label` is placed after the `input`.
+This is because we want the CSS to position the `label` based on the `input` being selected,
+and CSS selectors work more easily when the target is the following sibling.
+It does not affect the document semantically.
+
+* When the `input` gets `focus`, the CSS selector moves the `label`.
+The `transition` defined on the `label` provides the animation.
+
+* If an `id` is passed in, it will be used for the `input`.  If not, the lodash function will generate an `id` for us.
+An `id` is not required for positioning the `label`, but linking the `input` and `label` is good for accessibility.
+
+* A class is added by the `JSX` if the `input` has a value.
+The CSS positions the `label` to the corner if the `input` is selected, or if it has a value.
+
+* It is in React Memo.
+This is because I add Memo by default, since I expect renders to be much more costly than property comparisons.
+
+### Why use React instead of a pure CSS solution
+
+There are other approaches which provide the same result.  
+They tend to rely on [valid selectors](https://developer.mozilla.org/en-US/docs/Web/CSS/:valid)
+and [after pseudo elements](https://developer.mozilla.org/en-US/docs/Web/CSS/::after).
+
+These approaches can be quite convoluted.
+If React is already being used, it is very natural to separate the presentation in a component,
+and modifying state based on whether it has content is built into the React paradigm.
+
+

@@ -1,0 +1,15 @@
+.posts-overview {
+  padding: 20px;
+  background-image: repeating-linear-gradient(to bottom right, rgba(217,235,227,1), rgba(204,235,204,1), rgba(232,235,232,1) 300px);
+}
+
+.posts-overview .heading {
+  margin: 10px auto;
+  text-align: center;
+}
+
+.posts-overview .posts {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-rows: 32px;
+}

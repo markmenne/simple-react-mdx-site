@@ -1,0 +1,50 @@
+.post-layout {
+    display: grid;
+    grid-template-areas:
+      'header'
+      'metadata'
+      'main'
+      'footer';
+    grid-gap: 10px;
+    background-image: repeating-linear-gradient(to bottom right, rgba(227,227,255,1), rgba(214,214,255,1), rgba(232,232,255,1) 300px);
+}
+
+h1 {
+  text-align: center;
+}
+
+.meta-data {
+  margin: 0 20px;
+}
+
+.meta-data p {
+  margin: 0;
+  text-align: right;
+}
+
+code {
+  background-color: #fff5e0;
+}
+
+pre.prism-code {
+  overflow-x: auto;
+}
+
+hr {
+  width: 100%;
+}
+
+.post-footer {
+  margin: 20px;
+}
+
+.post-footer .heading {
+  margin: 10px auto;
+  text-align: center;
+}
+
+.post-footer .posts {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-rows: 32px;
+}

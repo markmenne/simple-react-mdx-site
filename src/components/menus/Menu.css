@@ -1,0 +1,47 @@
+.menu-containter {
+    position: sticky;
+    background: rgba(0, 0, 0, 0.8);
+    top: 0px;
+    width: 100%;
+    z-index: 20;
+    color: white;
+    white-space: nowrap;
+}
+
+.menu-containter > button {
+    border-radius: 0px;
+    height: 24px;
+    width: 24px;
+    margin: 4px;
+}
+
+.menu-container:after, .sub-menu-containter:after { 
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.sub-menu-container {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    top: 32px;
+    z-index: 20;
+}
+
+.sub-menu-container > button {
+    border-radius:0px;
+    margin: 0px;
+    padding: 4px 6px;
+    height: 32px;
+    width: 160px;
+    background: darkslategrey;
+    border: 0px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: 0.3s;
+    color: white;
+}
+
+.sub-menu-container > button:hover {
+    opacity: 1;
+}

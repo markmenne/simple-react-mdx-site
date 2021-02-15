@@ -1,0 +1,13 @@
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: #1488cc;
+  text-decoration: none;
+  border-bottom: 2px solid #1488cc;
+}
+
+a:hover {
+  filter: brightness(120%);
+}

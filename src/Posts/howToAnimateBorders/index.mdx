@@ -1,0 +1,158 @@
+import AddressInputAnimated from './AddressInputAnimated.tsx'
+
+### An Input with Activate Animation
+
+Adding a few touches to your controls can make a site feel much nicer.
+One such decoraiton is including an animation when clicking on an input.
+
+Try clicking in the input below.
+
+<AddressInputAnimated />
+
+This extends some ideas introduced in [an article about inline labels](/post/how-to-create-html-control-inline-labels)
+
+### Using the New Control
+
+Broadly, to use the new control, you only need to change `input` to the new `InputText` control,
+and pass the `label` as a property.
+However, you may need to adjust positioning since the new control adds its own margins and padding on the input.
+The `div` wrapping the `input` is a good place to adjust positioning. 
+
+To use the control, change
+
+```jsx
+<input type="text" name="address-line-1" value={controlledValue} />
+```
+
+to
+
+```jsx
+<InputTextAnimated type="text" name="address-line-1" value={controlledValue} label="Address Line 1" />
+```
+
+### Implementing the New Control
+
+So, now we should write the new control.
+
+First, if you don't have [Lodash](https://lodash.com/) already, then run the following to get a utility which we use.
+
+```bash
+yarn add lodash.uniqueid @types/lodash.uniqueid
+```
+
+Now for the implementation.
+
+```tsx
+/* ./InputTextAnimated.tsx */
+
+import { FunctionComponent, InputHTMLAttributes, memo, useState } from "react";
+import uniqueid from "lodash.uniqueid";
+import './InputAnimated.css';
+
+export interface InputTextProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'placeholder'> {
+    label: string,
+}
+
+const InputTextAnimated: FunctionComponent<InputTextProps> = ({
+    ...props
+}) => {
+
+    const [newId] = useState(uniqueid('gen-'));
+    const id = props.id ?? newId;
+
+    const className = `animated-input-container${props.value == null || props.value === '' ? '' : ' has-value'}`
+
+    return (
+        <span className={className}>
+            <input id={id} {...props} />
+            <label htmlFor={id}>{props.label}</label>
+            <span />
+        </span>
+    );
+}
+
+export default memo(InputTextAnimated);
+```
+
+```css
+/* ./InputAnimated.css */
+
+.animated-input-container {
+    position: relative;
+    display: inline-flex;
+}
+
+.animated-input-container > input {
+    width: 160px;
+    height: 36px;
+    padding: 10px 0 0 6px;
+    margin: 0;
+    border-radius: 4px;
+    background-color: white;
+    border: 0;
+    outline: none;
+}
+
+.animated-input-container > label {
+    position: absolute;
+    padding-top: 12px;
+    padding-left: 8px;
+    transition: 0.2s;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    pointer-events: none;
+}
+
+.animated-input-container > input:focus + label, .animated-input-container.has-value > label {
+    padding-top: 0px;
+    padding-left: 2px;
+    font-size: 12px;
+    color: blue;
+}
+
+.animated-input-container > span {
+    position: absolute;
+    border-bottom: 2px solid blue;
+    width: 0px;
+    height: 0;
+    bottom: 0;
+    transition: width 330ms ease-in-out;
+}
+
+.animated-input-container > input:focus + label + span {
+    width: 100%;
+    transition: width 330ms ease-in-out;
+}
+```
+
+* The `InputText` control creates a continer which holds the actual `input`, the `label`, and a `span`.
+
+* The `span` provides the underline.  It starts with `0 width`.
+When the `input` gets `focus`, the `width` is changed to `100%`, and a `transition` is applied.
+This results in the effect of drawing an underline.
+
+* For the general concepts around the `label`, see [the article about inline labels](/post/how-to-create-html-control-inline-labels)
+
+* The positioning uses `flex` rather than `inline-block`.
+This generally provides more control over sizing and location.
+Because of this, and also because it is position using `padding` instead of `top` and `left`,
+the `input`, `label`, and `span` size properly (inuitively) relative to their container.
+
+* Not shown here is `box-sizing: border-box` because that should be applied globally to any new project.
+
+* To have an underline which changes on selection, add a `border bottom` to the `input`.  
+It will be overwritten with the `span` when the `input` is selected.
+
+### Why use React instead of a pure CSS solution
+
+There are other approaches which provide the same result.  
+They tend to rely on [valid selectors](https://developer.mozilla.org/en-US/docs/Web/CSS/:valid)
+and [after pseudo elements](https://developer.mozilla.org/en-US/docs/Web/CSS/::after).
+
+These approaches can be quite convoluted.
+If React is already being used, it is very natural to separate the presentation in a component.
+
+

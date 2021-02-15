@@ -1,0 +1,80 @@
+Recently I ran across [MDX](https://github.com/mdx-js/mdx), and I'm an instant fan of it.
+I am using it now to write this up in a few short minutes.
+
+This article is how to install MDX with Typescript using create-react-app.
+It is not going to use any server, such as [Next.js](https://nextjs.org/), which do give you more option, but add extra steps at deployment.
+It assumes familiarity with [create-react-app](https://es.reactjs.org/docs/create-a-new-react-app.html).
+
+The MDX project has reasonable documentation, but I took a couple of wrong turns during the setup.
+All the necessary information is in the official docs, but there is some apparently outdated info as well.
+
+So, let's get started.
+
+### Install with CRA
+
+Follow the steps in the GitHub guide to get started: 
+https://github.com/mdx-js/mdx/blob/main/docs/getting-started/create-react-app.mdx
+
+Do not follow the info on their [site](https://mdxjs.com/getting-started/create-react-app).
+It refers to mdx.macro, which appears unmaintained, and caused a number of issues, 
+such as making mdx imports difficult, and various rendering inconsistencies.
+
+### Add Typescript
+
+1. As described in CRA's [Adding TypeScript](https://create-react-app.dev/docs/adding-typescript/), run
+
+```bash
+npm install --save typescript @types/node @types/react @types/react-dom @types/jest
+```
+
+or
+
+```bash
+yarn add typescript @types/node @types/react @types/react-dom @types/jest
+```
+
+2. Rename `App.js` to `App.tsx`.
+
+This causes an error like:
+
+```markup
+Cannot find module '!babel-loader!@mdx-js/loader!./Content.mdx' or its corresponding type declarations.ts(2307)
+```
+
+at
+
+```jsx
+import Content from '!babel-loader!@mdx-js/loader!./Content.mdx'
+```
+
+To fix this error, use the solution described in [Adding TypeScript](https://mdxjs.com/advanced/typescript).
+
+3. Create `mdx.d.ts` in the `src` directory, and add the following content.  
+Using the `src` directory allows it to be picked up without any further changes.
+
+```jsx
+declare module '*.mdx' {
+  let MDXComponent: (props: any) => JSX.Element
+  export default MDXComponent
+}
+```
+
+The solution given in [GitHub](https://github.com/mdx-js/mdx/blob/main/docs/advanced/typescript.mdx) did not work for me.
+
+4. To use `MDXProvider` without Typescript errors, run the following. 
+
+
+```bash
+yarn add @types/mdx-js__react
+```
+
+Note that the `code` component had no effect when used directly, without `MDXProvider`.
+Using `MDXProvider`, it worked as expected.
+
+* The application should now be usable.
+
+
+
+
+
+
