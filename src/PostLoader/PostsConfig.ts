@@ -1,5 +1,9 @@
 import { getFilePart } from "./postHelper";
 
+// Note that changing this probably means finding and changing the path within mdx files,
+// because their links are hard coded.
+export const POST_ROOT = '/post';
+
 export type POST_TYPE = {
     name: string;
     targetUrl: string;

@@ -1,7 +1,7 @@
 /* eslint-disable import/no-webpack-loader-syntax */
 import React, { ComponentType, lazy, LazyExoticComponent } from "react";
 import { Link } from "react-router-dom";
-import { findPostItemByName, findPostItemByUrlIn, POST_TYPE } from "./PostsConfig";
+import { findPostItemByName, findPostItemByUrlIn, POST_ROOT, POST_TYPE } from "./PostsConfig";
 
 export type MetadataType = {
     title: string,
@@ -16,7 +16,7 @@ export const loadPost = (urlIn: string): { component: LazyExoticComponent<Compon
     }
 }
 
-export const buildPath = (key: string) => `post/${key}`
+export const buildPath = (key: string) => `${POST_ROOT}/${key}`
 
 export const getFilePart = (filePath: string) => {
     var fileName = filePath;

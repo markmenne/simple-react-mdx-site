@@ -2,7 +2,7 @@ Recently I ran across [MDX](https://github.com/mdx-js/mdx), and I'm an instant f
 I am using it now to write this up in a few short minutes.
 
 This article is how to install MDX with Typescript using create-react-app.
-It is not going to use any server, such as [Next.js](https://nextjs.org/), which do give you more option, but add extra steps at deployment.
+It is not going to use any server, such as [Next.js](https://nextjs.org/), which do give you more options, but add extra steps at deployment.
 It assumes familiarity with [create-react-app](https://es.reactjs.org/docs/create-a-new-react-app.html).
 
 The MDX project has reasonable documentation, but I took a couple of wrong turns during the setup.
@@ -47,9 +47,9 @@ at
 import Content from '!babel-loader!@mdx-js/loader!./Content.mdx'
 ```
 
-To fix this error, use the solution described in [Adding TypeScript](https://mdxjs.com/advanced/typescript).
+3. To fix the above error, we use the solution described in [Adding TypeScript](https://mdxjs.com/advanced/typescript).
 
-3. Create `mdx.d.ts` in the `src` directory, and add the following content.  
+Create `mdx.d.ts` in the `src` directory, and add the following content.  
 Using the `src` directory allows it to be picked up without any further changes.
 
 ```jsx
@@ -68,8 +68,8 @@ The solution given in [GitHub](https://github.com/mdx-js/mdx/blob/main/docs/adva
 yarn add @types/mdx-js__react
 ```
 
-Note that the `code` component had no effect when used directly, without `MDXProvider`.
-Using `MDXProvider`, it worked as expected.
+Note that the `code` component had no effect when used directly, ie without [MDXProvider](https://mdxjs.com/getting-started#mdxprovider).
+However, when using `MDXProvider`, it worked as expected.
 
 * The application should now be usable.
 

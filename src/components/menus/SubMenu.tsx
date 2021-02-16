@@ -16,15 +16,19 @@ const SubMenu = ({
     const subMenuElementRef = useRef(null);
     useOutsideClick(subMenuElementRef, closeSubMenuHandler, true);
 
-    const processPageLoadHandler = (targetUrl: string) => {
-        history.push(targetUrl);
+    const processPageLoadHandler = (targetUrl: string, remote: boolean) => {
+        if (remote) {
+            window.location.href = targetUrl;
+        } else {
+            history.push(targetUrl);
+        }
         closeSubMenuHandler();
     }
 
-    const handleNavigationClick = (targetUrl: string) => {
+    const handleNavigationClick = (targetUrl: string, remote: boolean) => {
         return (event: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
             event.preventDefault();
-            processPageLoadHandler(targetUrl);
+            processPageLoadHandler(targetUrl, remote);
         }
 
     }
@@ -37,7 +41,7 @@ const SubMenu = ({
             >
 
                 {MENU_ITEMS.map((menuItem) => {
-                    return <button onClick={handleNavigationClick(menuItem.targetUrl)}>
+                    return <button onClick={handleNavigationClick(menuItem.targetUrl, menuItem.remote)}>
                         {menuItem.name}
                     </button>
                 })}
